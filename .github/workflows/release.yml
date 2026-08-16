@@ -47,11 +47,10 @@ jobs:
           - target: aarch64-apple-darwin
             os: macos-latest
             asset: hf-pull-macos-aarch64
-            ext: tar.gz
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             asset: hf-pull-windows-x86_64
-            ext: zip
+            ext: tar.gz
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
             asset: hf-pull-linux-x86_64-musl
@@ -85,25 +84,25 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
           BIN_NAME="hf-pull"
-          TARGET_DIR="rust_project/target/${{ matrix.target }}/release"
           if [ "${{ matrix.target }}" = "x86_64-pc-windows-msvc" ]; then
             BIN_NAME="hf-pull.exe"
           fi
-          BIN_PATH="$TARGET_DIR/$BIN_NAME"
+          BIN_PATH="rust_project/target/${{ matrix.target }}/release/$BIN_NAME"
+          echo "Looking for binary at: $BIN_PATH"
           if [ ! -f "$BIN_PATH" ]; then
             echo "::error::Binary not found at $BIN_PATH"
+            ls -la "rust_project/target/${{ matrix.target }}/release/" || true
             exit 1
           fi
           mkdir -p release-out
           cp "$BIN_PATH" "release-out/$BIN_NAME"
-          if [ "${{ matrix.ext }}" = "tar.gz" ]; then
-            tar -C release-out -czf "${{ matrix.asset }}.tar.gz" "$BIN_NAME"
-            echo "ASSET=${{ matrix.asset }}.tar.gz" >> "$GITHUB_ENV"
-          else
-            (cd release-out && zip -q "../${{ matrix.asset }}.zip" "$BIN_NAME")
-            echo "ASSET=${{ matrix.asset }}.zip" >> "$GITHUB_ENV"
-          fi
+          ASSET_PATH="${{ matrix.asset }}.tar.gz"
+          tar -C release-out -czf "$ASSET_PATH" "$BIN_NAME"
+          echo "ASSET=$ASSET_PATH" >> "$GITHUB_ENV"
+          ls -la "$ASSET_PATH"
+
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
