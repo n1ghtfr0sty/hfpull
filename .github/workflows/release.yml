@@ -38,16 +38,7 @@ jobs:
         include:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
-          - target: x86_64-apple-darwin
-            os: macos-latest
-            asset: hf-pull-macos-x86_64
-            ext: tar.gz
-          - target: aarch64-apple-darwin
-            os: macos-latest
-            asset: hf-pull-macos-aarch64
-          - target: x86_64-pc-windows-msvc
-            os: windows-latest
-            asset: hf-pull-windows-x86_64
+            asset: hf-pull-linux-x86_64
             ext: tar.gz
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
@@ -57,9 +48,17 @@ jobs:
             os: ubuntu-24.04-arm
             asset: hf-pull-linux-aarch64
             ext: tar.gz
-          - target: x86_64-unknown-linux-musl
-            os: ubuntu-latest
-            asset: hf-pull-linux-x86_64-musl
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            asset: hf-pull-macos-x86_64
+            ext: tar.gz
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            asset: hf-pull-macos-aarch64
+            ext: tar.gz
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            asset: hf-pull-windows-x86_64
             ext: tar.gz
     steps:
       - uses: actions/checkout@v4
@@ -71,10 +70,12 @@ jobs:
 
       - name: "Linux: install musl host tools"
         if: matrix.os == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-musl'
+        shell: bash
         run: |
           sudo apt-get update
           sudo apt-get install -y musl-tools
           rustup target add x86_64-unknown-linux-musl
+
       - name: Cache cargo registry & target
         uses: Swatinem/rust-cache@v2
         with:
@@ -107,7 +108,6 @@ jobs:
           tar -C release-out -czf "$ASSET_PATH" "$BIN_NAME"
           echo "ASSET=$ASSET_PATH" >> "$GITHUB_ENV"
           ls -la "$ASSET_PATH"
-
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
