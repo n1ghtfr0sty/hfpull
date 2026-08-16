@@ -1,0 +1,6 @@
+{
+  "name": "Rust HuggingFace Weight Downloader CLI",
+  "description": "Standalone Rust CLI tool and interactive terminal workbench to fetch and download offline model weights from huggingface.co without symlinks",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

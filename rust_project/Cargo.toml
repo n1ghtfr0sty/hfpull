@@ -1,0 +1,54 @@
+[package]
+name = "hf-pull"
+version = "0.1.0"
+edition = "2021"
+authors = ["AI Studio Rust Toolchain"]
+description = "Fast, standalone Rust CLI to download straight HuggingFace model weights without symlinks"
+license = "MIT OR Apache-2.0"
+keywords = ["huggingface", "weights", "downloader", "llm", "cli"]
+readme = "README.md"
+
+[dependencies]
+# CLI argument parsing
+clap = { version = "4.5", features = ["derive", "env", "cargo"] }
+
+# Asynchronous runtime
+tokio = { version = "1.39", features = ["full"] }
+
+# HTTP client with streaming & TLS
+reqwest = { version = "0.12", default-features = false, features = [
+    "rustls-tls",
+    "stream",
+    "json",
+] }
+
+# Multi-progress bar UI
+indicatif = { version = "0.17", features = ["tokio"] }
+
+# Futures & async utilities
+futures-util = "0.3"
+async-trait = "0.1"
+
+# Serialization & JSON
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Hashing & verification
+sha2 = "0.10"
+hex = "0.4"
+
+# Colored terminal output
+colored = "2.1"
+
+# Error handling
+anyhow = "1.0"
+
+# Glob pattern matching for file filters
+glob = "0.3"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
