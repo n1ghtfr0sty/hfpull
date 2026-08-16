@@ -64,7 +64,7 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - name: Linux: add musl target + cross-link tools
+      - name: "Linux: add musl target + cross-link tools"
         if: matrix.target == 'x86_64-unknown-linux-musl'
         run: |
           sudo apt-get update
@@ -75,7 +75,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: rust_project
-          cache-target: ${{ matrix.target }}
+
 
       - name: Build release binary
         working-directory: rust_project
@@ -112,10 +112,6 @@ jobs:
           path: ${{ env.ASSET }}
           if-no-files-found: error
           retention-days: 7
-
-      - name: Generate SHA-256 checksums
-        if: matrix.ext == 'tar.gz' || matrix.ext == 'zip'
-        run: sha256sum "${{ env.ASSET }}" >> checksums.txt
 
   checksums:
     name: Aggregate checksums
